@@ -6,6 +6,7 @@ import folder_paths
 from .stabledelight_comfyui.pipeline_yoso_delight import YosoDelightPipeline
 
 class StableDelightNode:
+    upscale_methods = ["bilinear", "nearest-exact", "area", "bicubic"]
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -17,6 +18,35 @@ class StableDelightNode:
                     "max": 4096,
                     "step": 64
                 }),
+                "t_start": ("FLOAT", {
+                    "default": 0.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.01
+                }),
+                "match_input_resolution": ("BOOLEAN", {
+                    "default": False
+                }),
+                "ensemble_size": ("INT", {
+                    "default": 1,
+                    "min": 1,
+                    "max": 10,
+                    "step": 1
+                }),
+                "batch_size": ("INT", {
+                    "default": 1,
+                    "min": 1,
+                    "max": 4,
+                    "step": 1
+                }),
+            },
+            "optional": {
+                "seed": ("INT", {
+                    "default": -1,
+                    "min": -1,
+                    "max": 0xffffffffffffffff
+                }),
+                "resample_method": (s.upscale_methods,),
             }
         }
 
@@ -58,7 +88,14 @@ class StableDelightNode:
         # Resize the image
         return input_image.resize((W, H), Image.Resampling.LANCZOS)
 
-    def delight_image(self, image, processing_resolution):
+    def delight_image(self, image, processing_resolution, t_start, match_input_resolution, 
+                     ensemble_size, batch_size, seed=-1, resample_method="lanczos"):
+        # Set random seed if provided
+        if seed != -1:
+            generator = torch.Generator(device=self.device).manual_seed(seed)
+        else:
+            generator = None
+            
         # Convert from ComfyUI image format to PIL and resize
         if torch.is_tensor(image):
             if image.ndim == 4:
@@ -66,14 +103,17 @@ class StableDelightNode:
             image = (image * 255).clamp(0, 255).to(torch.uint8)
             image = Image.fromarray(image.cpu().numpy())
         
-        # Resize image
-        image = self.resize_image(image, processing_resolution)
-        
         # Process image
         pipe_out = self.pipe(
             image,
-            match_input_resolution=False,
-            processing_resolution=processing_resolution
+            match_input_resolution=match_input_resolution,
+            processing_resolution=processing_resolution,
+            t_start=t_start,
+            ensemble_size=ensemble_size,
+            batch_size=batch_size,
+            generator=generator,
+            resample_method_input=resample_method,
+            resample_method_output=resample_method
         )
         
         # Convert output to ComfyUI format
