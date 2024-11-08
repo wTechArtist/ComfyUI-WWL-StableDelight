@@ -3,7 +3,7 @@ import torch
 import numpy as np
 from PIL import Image
 import folder_paths
-from .stabledelight.pipeline_yoso_delight import YosoDelightPipeline
+from .stabledelight_comfyui.pipeline_yoso_delight import YosoDelightPipeline
 
 class StableDelightNode:
     @classmethod
