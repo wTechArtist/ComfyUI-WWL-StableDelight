@@ -1,7 +1,7 @@
 from .nodes import StableDelightNode
 
 NODE_CLASS_MAPPINGS = {
-    "StableDelight": StableDelightNode
+    "StableDelight-weiweiliang": StableDelightNode
 }
 
 __all__ = ['NODE_CLASS_MAPPINGS']
