@@ -1,0 +1,15 @@
+[project]
+name = "comfyui-stabledelight-weiweiliang"
+description = "Nodes:StableDelight-weiweiliang"
+version = "1.0.0"
+license = {file = "LICENSE"}
+dependencies = ["accelerate", "diffusers>=0.28.0", "matplotlib==3.8.2", "scipy==1.11.4", "torch==2.0.1", "torchvision==0.15.2", "transformers==4.36.1", "torchaudio==2.0.2", "xformers==0.0.21", "pytorch-lightning==2.0.0", "einops==0.7.0"]
+
+[project.urls]
+Repository = "https://github.com/wTechArtist/ComfyUI-StableDelight-weiweiliang"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "ComfyUI-StableDelight-weiweiliang"
+Icon = ""
